@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문제풀이 랭킹</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>문제풀이 랭킹</h1>
+    
+    <!-- 랭킹 표시 -->
+    <table id="ranking-table">
+        <thead>
+            <tr>
+                <th>순위</th>
+                <th>이름</th>
+                <th>점수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 랭킹 데이터는 JavaScript로 삽입 -->
+        </tbody>
+    </table>
+
+    <h2>새로운 랭킹 추가</h2>
+    <form id="ranking-form">
+        <label for="username">이름:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="score">점수:</label>
+        <input type="number" id="score" name="score" required>
+        <button type="submit">제출</button>
+    </form>
+
+    <script>
+        // 랭킹 목록을 API에서 가져와서 표시
+        function fetchRankings() {
+            fetch('/api/rankings')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#ranking-table tbody');
+                    tableBody.innerHTML = ''; // 기존 데이터를 지우고 새로 추가
+                    data.forEach((ranking, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${ranking.username}</td>
+                            <td>${ranking.score}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        }
+
+        // 랭킹 추가 처리
+        document.getElementById('ranking-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const score = document.getElementById('score').value;
+
+            fetch('/api/rankings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, score })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchRankings(); // 랭킹 갱신
+                document.getElementById('ranking-form').reset(); // 폼 초기화
+            });
+        });
+
+        // 페이지 로딩 시 랭킹을 가져오기
+        window.onload = fetchRankings;
+    </script>
+</body>
+</html>
