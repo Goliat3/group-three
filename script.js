@@ -17,7 +17,22 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+async function getProblems() {
+  try {
+    const problemCol = collection(db, "problem");
+    const problemSnapshot = await getDocs(problemCol);
+    const problemList = problemSnapshot.docs.map((doc) => ({
+      id: doc.id, // 각 문서의 ID 포함
+      ...doc.data(), // 문서 데이터를 펼쳐서 객체로 반환
+    }));
+    return problemList;
+  } catch (error) {
+    console.error("Error getting problems:", error);
+    return [];
+  }
+}
 
-const db = firebase.firestore();
+async function addCity(city) {
+  const citiesCol = collection(db, 'cities');
+  await addDoc(citiesCol, city);
+} //db추가
