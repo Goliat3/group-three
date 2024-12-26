@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "fetch": "^1.1.0",
     "firebase": "^11.1.0"
   }
 }
