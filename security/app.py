@@ -1,33 +1,16 @@
-from fastapi import FastAPI, Form, Request, Depends, HTTPException
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
-from typing import Optional
+import firebase_admin
+from firebase_admin import credentials, firestore
+from fastapi import FastAPI, Form, HTTPException
 import hashlib
 
-# FastAPI 앱 생성
+# Firebase 인증 설정
+cred = credentials.Certificate("path/to/your/firebase_credentials.json")
+firebase_admin.initialize_app(cred)
+
+# Firestore 클라이언트 초기화
+db = firestore.client()
+
 app = FastAPI()
-
-# 템플릿 렌더러 설정 (HTML 파일을 렌더링하기 위해 사용)
-templates = Jinja2Templates(directory="templates")
-
-# 간단한 사용자 정보 저장용 (실제 환경에서는 데이터베이스 사용)
-fake_db = {}
-
-# 로그인 및 회원가입 모델 정의
-class User(BaseModel):
-    username: str
-    password: str
-
-# 로그인 페이지 렌더링
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-# 회원가입 페이지 렌더링
-@app.get("/signup", response_class=HTMLResponse)
-async def signup_page(request: Request):
-    return templates.TemplateResponse("signup.html", {"request": request})
 
 # 회원가입 처리
 @app.post("/signup")
@@ -35,32 +18,42 @@ async def signup(username: str = Form(...), password: str = Form(...), confirm_p
     # 비밀번호 확인
     if password != confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
-    
+
+    # Firestore에서 사용자 컬렉션 확인
+    users_ref = db.collection("users")
+    user_doc = users_ref.document(username).get()
+
     # 사용자 이미 존재 확인
-    if username in fake_db:
+    if user_doc.exists:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
+
     # 비밀번호 해싱
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-    # 사용자 정보 저장
-    fake_db[username] = hashed_password
-    
+    # 사용자 데이터 Firestore에 저장
+    users_ref.document(username).set({
+        "username": username,
+        "password": hashed_password
+    })
+
     return {"message": "User successfully created"}
 
 # 로그인 처리
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
+    # Firestore에서 사용자 찾기
+    users_ref = db.collection("users")
+    user_doc = users_ref.document(username).get()
+
     # 사용자 존재 확인
-    if username not in fake_db:
+    if not user_doc.exists:
         raise HTTPException(status_code=400, detail="Username not found")
     
     # 비밀번호 확인
+    user_data = user_doc.to_dict()
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    if fake_db[username] != hashed_password:
+
+    if user_data["password"] != hashed_password:
         raise HTTPException(status_code=400, detail="Incorrect password")
     
     return {"message": "Login successful"}
-
-# 서버 실행
-# uvicorn main:app --reload 로 실행합니다.
