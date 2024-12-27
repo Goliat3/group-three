@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경희고 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
+        <header class="bg-blue-100 text-center py-4 rounded-t-lg">
+            <h1 class="text-2xl font-bold text-gray-800">경희고 퀴즈</h1>
+        </header>
+        <main class="border-t border-gray-300 mt-4 p-4">
+            <div class="flex justify-between mb-4">
+                <div class="w-1/2 pr-2">
+                    <h2 class="text-lg font-semibold mb-2">문제</h2>
+                    <div class="bg-gray-50 border border-gray-300 rounded-lg h-40 p-4">
+                        <!-- 문제 내용 -->
+                    </div>
+                </div>
+                <div class="w-1/2 pl-2">
+                    <h2 class="text-lg font-semibold mb-2">선지</h2>
+                    <div class="bg-gray-50 border border-gray-300 rounded-lg h-40 p-4">
+                        <!-- 선지 내용 -->
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center space-x-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"onclick="createProblem()">새로운 문제</button>
+                <button class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"onclick="checkAnswer()">정답 제출</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
