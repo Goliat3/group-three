@@ -22,13 +22,21 @@
                 <div class="w-1/2 pr-2">
                     <h2 class="text-lg font-semibold mb-2">문제</h2>
                     <div class="bg-gray-50 border border-gray-300 rounded-lg h-40 p-4">
-                        <!-- 문제 내용 -->
+                        <img class="p" src="">
                     </div>
                 </div>
                 <div class="w-1/2 pl-2">
                     <h2 class="text-lg font-semibold mb-2">선지</h2>
-                    <div class="bg-gray-50 border border-gray-300 rounded-lg h-40 p-4">
-                        <!-- 선지 내용 -->
+                    <div>
+                        <button type="button" onclick = "Answer(1)">(1)</button>
+                        <p></p>
+                        <button type="button"onclick = "Answer(2)">(2)</button>
+                        <p></p>
+                        <button type="button"onclick = "Answer(3)">(3)</button>
+                        <p></p>
+                        <button type="button"onclick = "Answer(4)">(4)</button>
+                        <p></p>
+                        <button type="button"onclick = "Answer(5)">(5)</button>
                     </div>
                 </div>
             </div>
@@ -38,5 +46,37 @@
             </div>
         </main>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        import { doc, getDoc } from "firebase/firestore";
+
+        const RandPNum = Math.floor(1+Math.random()*3);
+        const docRef = doc(db, "korean", RandPNum);
+        const docSnap = await getDoc(docRef);
+        const problem = docSnap.data('problem')
+        const answer = docSnap.data('answer')
+        const Number = 0;
+
+        function createProblem() {
+            const RandPNum = Math.floor(1+Math.random()*3);
+            const docRef = doc(db, "korean", RandPNum);
+            const docSnap = getDoc(docRef);
+            const problem = docSnap.data('problem')
+            const answer = docSnap.data('answer')
+            const Number = 0;
+            const PSec = document.getElementsByClassName('p')
+            Psec.src="data:image/;base64,"+problem;
+        }
+        function checkAnswer() {
+            if(number == answer) {
+                console.log("정답입니다!")
+            }else {
+                console.log("오답입니다.")
+            }
+        }
+        function Answer(number) {
+            Number = number
+        }
+    </script>
 </body>
 </html>
